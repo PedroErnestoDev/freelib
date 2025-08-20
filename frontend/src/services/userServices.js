@@ -29,3 +29,30 @@ export const register = async (data) => {
     };
   }
 };
+
+export async function login(credentials) {
+  try {
+    const response = await fetch(`${userEndPoint}/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(credentials),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Erro ao fazer login");
+    }
+
+    const result = await response.json();
+
+    return {
+      success: true,
+      data: result,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message || "Erro inesperado",
+    };
+  }
+}

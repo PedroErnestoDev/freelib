@@ -1,15 +1,15 @@
-import styled from "styled-components"
+import { Link } from "react-router-dom";
+import "./Logo.sass";
 
-const ContainerLogo = styled.div`
-    font-family: "Shrikhand", Arial, Helvetica, sans-serif;
-    color: black;
-    font-size: 54px;
-`
+export default function Logo() {
+  const isAuthenticated = Boolean(localStorage.getItem("token"));
 
-export default function Logo(){
-    return (
-        <ContainerLogo>
-            Freelib
-        </ContainerLogo>
-    )
+  return (
+    <Link 
+      to={isAuthenticated ? "/dashboard" : "/"} 
+      className="containerLogo"
+    >
+      Freelib
+    </Link>
+  );
 }

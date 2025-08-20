@@ -13,7 +13,11 @@ export default function Navbar({ register }){
     const navigate = useNavigate();
 
     function handleEntrar(){
-        navigate("/login");
+        if(register == true){
+            navigate("/register");
+        } else {
+            navigate("/login");
+        }
     }
     return (
         <ContainerNavbar>

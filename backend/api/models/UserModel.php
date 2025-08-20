@@ -1,6 +1,6 @@
 <?php 
 
-class ProdutoModel {
+class UserModel {
     private $pdo;
     public function __construct($pdo)
     {
@@ -23,8 +23,22 @@ class ProdutoModel {
         $userRegistered = $stmt->execute();
         return $userRegistered;
     }
-    public function login($nome, $preco, $qtd, $id){
-        // post
-        
+    public function login($email, $password){
+        $stmt = $this->pdo->prepare("SELECT id, name, email, password FROM users WHERE email = :email");
+        $stmt->bindParam(':email', $email);
+        $stmt->execute();
+
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($user && password_verify($password, $user['password'])) {
+            // login válido
+            return [
+                'id' => $user['id'],
+                'name' => $user['name'],
+                'email' => $user['email']
+            ];
+        }
+
+        return false;
     }
 }
