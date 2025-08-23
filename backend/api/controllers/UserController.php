@@ -12,8 +12,18 @@ class UserController {
 
     public function createUser(){
         $input = json_decode(file_get_contents('php://input'), true);
+
+        $name = $input['name'] ?? '';
+        $email = $input['email'] ?? '';
+        $password = $input['password'] ?? '';
+
+        if (!$name || !$email || !$password){
+            return $this->respond(['error' => 'Name, E-mail and password are necessarily']);
+        }
+
         $data = $input;
         $success = $this->model->register($data);
+
         return $this->respond(['success' => $success], $success ? 201 : 500);
     }
 

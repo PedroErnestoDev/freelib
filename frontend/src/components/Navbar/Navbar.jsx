@@ -1,13 +1,7 @@
-import styled from "styled-components"
+import "./Navbar.sass"
 import Logo from "../Logo/Logo"
 import Button from "../Button/Button"
 import { useNavigate } from "react-router-dom"
-
-const ContainerNavbar = styled.nav`
-    display: flex;
-    justify-content: space-between;
-    margin: 10px 30px;
-`
 
 export default function Navbar({ register }){
     const navigate = useNavigate();
@@ -20,9 +14,9 @@ export default function Navbar({ register }){
         }
     }
     return (
-        <ContainerNavbar>
+        <nav className="containerNavbar">
             <Logo/>
             <Button onClick={handleEntrar}>{register ? "Register" : "Login"}</Button>
-        </ContainerNavbar>
+        </nav>
     )
 }

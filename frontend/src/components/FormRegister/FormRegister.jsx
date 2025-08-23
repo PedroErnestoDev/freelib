@@ -6,59 +6,54 @@ import Button from "../../components/Button/Button";
 import { useNavigate } from "react-router-dom";
 import Logo from "../../components/Logo/Logo";
 
-
 export default function FormRegister() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
-    confirmPassword: ""
-  })
+    confirmPassword: "",
+  });
 
-  useEffect(()=> {
-    console.log(formData)
-  },[formData])
+  useEffect(() => {
+    console.log(formData);
+  }, [formData]);
 
-  function handleChange(event){
-    const name = event.target.name
-    const value = event.target.value
-    setFormData((prevFormData)=>{
+  function handleChange(event) {
+    const name = event.target.name;
+    const value = event.target.value;
+    setFormData((prevFormData) => {
       return {
         ...prevFormData,
-        [name]:value
-      }
-    })
-    
+        [name]: value,
+      };
+    });
   }
 
-  async function submitForm(event){
-     event.preventDefault();
-    if(formData.password !== formData.confirmPassword){
-        alert("The passwords don't match")
-      return
+  async function submitForm(event) {
+    event.preventDefault();
+    if (formData.password !== formData.confirmPassword) {
+      alert("The passwords don't match");
+      return;
     }
     // Chamada para o backend
     try {
-      let response = await register(formData)
+      let response = await register(formData);
 
-      if(response.success){
-          setTimeout(() => {
-          navigate("/login");
-          }, 2000);
+      if (response.success) {
+        navigate("/dashboard");
       } else {
-        alert("Error to the register")
+        alert("Error to the register");
       }
-    } catch (error){
-      alert("Don't was possible make your register")
+    } catch (error) {
+      alert("Don't was possible make your register");
     }
   }
 
   return (
     <>
-      <div className="titulo"><h1>Welcome to</h1><Logo/></div>
       <form>
-        <Input 
+        <Input
           label="Name"
           name="name"
           type="text"
@@ -66,7 +61,7 @@ export default function FormRegister() {
           value={formData.name}
           onChange={handleChange}
         />
-        <Input 
+        <Input
           label="E-mail"
           name="email"
           type="email"
@@ -74,7 +69,7 @@ export default function FormRegister() {
           value={formData.email}
           onChange={handleChange}
         />
-        <Input 
+        <Input
           label="Password"
           name="password"
           type="password"
@@ -82,7 +77,7 @@ export default function FormRegister() {
           value={formData.password}
           onChange={handleChange}
         />
-        <Input 
+        <Input
           label="Confirme your password"
           name="confirmPassword"
           type="password"
@@ -90,8 +85,12 @@ export default function FormRegister() {
           value={formData.confirmPassword}
           onChange={handleChange}
         />
-        <Button onClick={submitForm} children="Register"/>
-        <TextoLink to="/register" textoAntes="New You already have an account?" textoLink="Log in here."/>
+        <Button onClick={submitForm} children="Register" />
+        <TextoLink
+          to="/login"
+          textoAntes="New You already have an account?"
+          textoLink="Log in here."
+        />
       </form>
     </>
   );

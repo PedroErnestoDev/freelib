@@ -1,23 +1,20 @@
-import styled from "styled-components";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-
-const ContainerApp = styled.div`
-  
-`;
+import Dashboard from "./pages/Dashboard"
 
 export default function App() {
   return (
     <BrowserRouter>
-      <ContainerApp>
+      <div>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
-      </ContainerApp>
+      </div>
     </BrowserRouter>
   );
 }

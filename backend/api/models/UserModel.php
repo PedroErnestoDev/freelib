@@ -1,12 +1,14 @@
-<?php 
+<?php
 
-class UserModel {
+class UserModel
+{
     private $pdo;
     public function __construct($pdo)
     {
         $this->pdo = $pdo;
     }
-    public function register($data){
+    public function register($data)
+    {
         // post
         $name = $data['name'];
         $email = $data['email'];
@@ -23,7 +25,8 @@ class UserModel {
         $userRegistered = $stmt->execute();
         return $userRegistered;
     }
-    public function login($email, $password){
+    public function login($email, $password)
+    {
         $stmt = $this->pdo->prepare("SELECT id, name, email, password FROM users WHERE email = :email");
         $stmt->bindParam(':email', $email);
         $stmt->execute();
