@@ -12,7 +12,7 @@ export default function TabBar(){
             <NavLink to="/settings">
                 <Settings className="icon" size="42"/>
             </NavLink>
-            <NavLink to="/publish">
+            <NavLink to="/create">
                 <SquarePlus className="icon" size="42"/>
             </NavLink>
             <NavLink to="/favorites">

@@ -1,4 +1,4 @@
-.containerArticles
+.containerArticle
     display: flex
     border: 3px solid black
     width: 246px
@@ -8,11 +8,15 @@
     flex-direction: column
     align-items: center
     background-color: #D5FFD3
-    row-gap: 10px
+    row-gap: 15px
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    
+    &:hover
+        box-shadow: 0 10px 8px -8px black
+        transform: scale(1.03);
 
 .titleArticles
     width: 200px
-
 
     display: -webkit-box
     -webkit-box-orient: vertical
@@ -30,9 +34,20 @@
     font-size: 12px
     line-height: 1.3
 
-
     max-height: calc(1.3em * 2)
 
 .imgArticles
-    width: 160px
-    height: 225px
+    max-width: 160px
+    max-height: 225px
+    
+
+.articleCard
+    display: flex
+    justify-content: center
+    align-items: center
+    flex-direction: column
+    row-gap: 20px
+
+    h1
+        align-items: center
+        text-align: center

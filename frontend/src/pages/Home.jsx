@@ -5,6 +5,7 @@ import Button from "../components/Button/Button";
 import Logo from "../components/Logo/Logo";
 import { useNavigate, Link } from "react-router-dom"
 import "./Home.sass"
+import FormCreateArticle from "../components/FormCreateArticle/FormCreateArticle";
 
 export default function Home(){
     const navigate = useNavigate();
@@ -27,6 +28,7 @@ export default function Home(){
                     </div>
             </div>
             </div>
+            <FormCreateArticle/>
         </>
     )
 }
