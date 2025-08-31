@@ -43,16 +43,15 @@ class ArticleModel
     }
 
     // Listar artigos de um usuário específico
-    public function getByUser($user_id)
+    public function findByUserId($userId)
     {
         $stmt = $this->pdo->prepare("
-            SELECT id, user_id, title, summary, cover_image, file_path, published_at
-            FROM articles
-            WHERE user_id = :user_id
-            ORDER BY published_at DESC
-        ");
-        $stmt->bindParam(':user_id', $user_id);
-        $stmt->execute();
+        SELECT id, user_id, title, summary, cover_image, file_path, published_at
+        FROM articles 
+        WHERE user_id = ?
+        ORDER BY published_at DESC
+    ");
+        $stmt->execute([$userId]); // corresponde ao '?'
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

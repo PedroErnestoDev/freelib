@@ -1,9 +1,20 @@
 import Logo from "../Logo/Logo";
 import InputSearch from "../InputSearch/InputSearch";
-import Button from "../Button/Button";
+import ButtonExit from "../ButtonExit/ButtonExit";
 import "./NavSearch.sass";
+import { useNavigate } from "react-router-dom";
 
-export default function NavSearch({ query, setQuery }) {
+export default function NavSearch({ query, setQuery, register }) {
+      const navigate = useNavigate();
+
+      function handleEntrar(){
+        if(register == true){
+            navigate("/register");
+        } else {
+            navigate("/login");
+        }
+    }
+
   return (
     <nav className="containerNav">
       <Logo />
@@ -12,9 +23,9 @@ export default function NavSearch({ query, setQuery }) {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
-      <Button bgColor="#fe7676" hoverColor="#f65d3e">
+      <ButtonExit onClick={handleEntrar} bgColor="#fe7676" hoverColor="#f65d3e">
         Exit
-      </Button>
+      </ButtonExit>
     </nav>
   );
 }

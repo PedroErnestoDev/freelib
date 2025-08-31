@@ -80,7 +80,6 @@ export const listArticles = async (q = "") => {
   }
 };
 
-
 export const createArticle = async (formData) => {
   try {
     const response = await fetch(`${BASE_URL}/article/create`, {
@@ -97,5 +96,24 @@ export const createArticle = async (formData) => {
     return { success: true, data: result };
   } catch (error) {
     return { success: false, error: error.message || "Erro inesperado" };
+  }
+};
+
+// Buscar perfil do usuário
+export const getProfile = async (userId) => {
+  try {
+    const response = await fetch(
+      `http://localhost:8000/api/user/profile/${userId}`
+    );
+    if (!response.ok) {
+      return {
+        success: false,
+        error: `Erro ${response.status}: ${response.statusText}`,
+      };
+    }
+    const data = await response.json();
+    return { success: true, data }; // retorna data dentro de um objeto padrão
+  } catch (err) {
+    return { success: false, error: err.message };
   }
 };

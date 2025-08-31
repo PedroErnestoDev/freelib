@@ -6,8 +6,12 @@ import Button from "../Button/Button";
 import { Upload, CircleCheck } from "lucide-react";
 import { useState, useRef } from "react";
 import { createArticle } from "../../services/userServices";
+import NavExit from "../NavExit/NavExit";
+import TabBar from "../TabBar/TabBar";
+import { useNavigate } from "react-router-dom";
 
-export default function FormCreateArticle() {
+export default function FormCreateArticle({ userId }) {
+  const navigate = useNavigate();
   const [fileName, setFileName] = useState("");
   const fileInputRef = useRef(null);
 
@@ -74,70 +78,85 @@ export default function FormCreateArticle() {
     const data = new FormData();
     data.append("fileTitle", formData.fileTitle);
     data.append("fileSummary", formData.fileSummary);
-    data.append("fileCover", formData.fileCover); // File
-    data.append("file", formData.file); // File
-    data.append("user_id", 1); // usuário logado
+    data.append("fileCover", formData.fileCover);
+    data.append("file", formData.file);
 
-    const result = await createArticle(data); // função JS que faz fetch
-    console.log(result);
+    const userId = localStorage.getItem("userId");
+    data.append("user_id", userId);
+
+    const token = localStorage.getItem("token")
+    data.append("token", token)
+
+    try {
+      const result = await createArticle(data);
+      console.log("Resultado da API:", result);
+      if (result.success) navigate("/dashboard");
+      else console.error("Erro ao criar artigo:", result);
+    } catch (err) {
+      console.error("Erro inesperado:", err);
+    }
   };
 
   return (
-    <form className="FormCreateArticle" onSubmit={handleSubmit}>
-      <InputCover
-        value={formData.fileCover}
-        onChange={(e) => {
-          const file = e.target.files?.[0] || null;
-          setFormData({ ...formData, fileCover: file });
-        }}
-      />
-
-      <div className="containerInputTextArea">
-        <Input
-          label="File Title"
-          name="fileTitle"
-          className="inputFileName"
-          style={{ width: "811px", fontSize: "32px" }}
-          onChange={handleInputChange}
-          labelStyle={{ fontSize: "32px" }}
-          value={formData.fileTitle}
+    <>
+      <NavExit />
+      <form className="FormCreateArticle" onSubmit={handleSubmit}>
+        <InputCover
+          value={formData.fileCover}
+          onChange={(e) => {
+            const file = e.target.files?.[0] || null;
+            setFormData({ ...formData, fileCover: file });
+          }}
         />
 
-        <TextArea
-          label="File Summary"
-          name="fileSummary"
-          style={{ width: "811px" }}
-          onChange={handleInputChange}
-          value={formData.fileSummary}
-        />
+        <div className="containerInputTextArea">
+          <Input
+            label="File Title"
+            name="fileTitle"
+            className="inputFileName"
+            style={{ width: "811px", fontSize: "32px" }}
+            onChange={handleInputChange}
+            labelStyle={{ fontSize: "32px" }}
+            value={formData.fileTitle}
+          />
 
-        <div className="containerButton">
-          <div
-            className="file-upload-wrapper"
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
-          >
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileInputChange}
-              style={{ display: "none" }}
-            />
-            <button
-              type="button"
-              className="file-upload-button"
-              onClick={handleUploadButtonClick} // corrigido
+          <TextArea
+            label="File Summary"
+            name="fileSummary"
+            style={{ width: "811px" }}
+            onChange={handleInputChange}
+            value={formData.fileSummary}
+          />
+
+          <div className="containerButton">
+            <div
+              className="file-upload-wrapper"
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
             >
-              Upload File <Upload size={28} strokeWidth={2} />
-            </button>
-            <div className="file-info">{fileName}</div>
-          </div>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileInputChange}
+                style={{ display: "none" }}
+              />
+              <button
+                type="button"
+                className="file-upload-button"
+                onClick={handleUploadButtonClick} // corrigido
+              >
+                Upload File <Upload size={28} strokeWidth={2} />
+              </button>
+              <div className="file-info">{fileName}</div>
+            </div>
 
-          <Button type="submit">
-            Publish File <CircleCheck size={28} strokeWidth={2} />
-          </Button>
+            <Button type="submit">
+              Publish File <CircleCheck size={28} strokeWidth={2} />
+            </Button>
+          </div>
         </div>
-      </div>
-    </form>
+      </form>
+      <TabBar />
+    </>
   );
 }

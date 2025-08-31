@@ -30,6 +30,7 @@ $conn = $db->conexao();
 switch ($resource) {
     case 'user':
         $controller = new UserController($conn);
+
         if ($method === 'POST') {
             switch ($action) {
                 case 'register':
@@ -41,6 +42,13 @@ switch ($resource) {
                 default:
                     http_response_code(404);
                     echo json_encode(['error' => 'Action not found']);
+            }
+        } elseif ($method === 'GET') {
+            if ($action === 'profile' && $id) {
+                $controller->profile($id);
+            } else {
+                http_response_code(404);
+                echo json_encode(['error' => 'Action not found']);
             }
         } else {
             http_response_code(405);

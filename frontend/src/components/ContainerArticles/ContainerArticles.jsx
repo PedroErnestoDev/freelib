@@ -42,7 +42,7 @@ export default function ContainerArticles({ query }) {
   return (
     <div className="containerArticles">
       {articles.length === 0 ? (
-        <p>Nenhum artigo encontrado.</p>
+        <p className='paragrafoNaoEncontrado'>Nenhum artigo encontrado.</p>
       ) : (
         articles.map((article) =>
           article && article.id ? (

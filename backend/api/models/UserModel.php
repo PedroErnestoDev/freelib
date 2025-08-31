@@ -7,6 +7,18 @@ class UserModel
     {
         $this->pdo = $pdo;
     }
+
+    public function findById($id)
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT id, name, email, bio, created_at 
+            FROM users 
+            WHERE id = ?
+        ");
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
     public function register($data)
     {
         // post
@@ -27,19 +39,13 @@ class UserModel
     }
     public function login($email, $password)
     {
-        $stmt = $this->pdo->prepare("SELECT id, name, email, password FROM users WHERE email = :email");
-        $stmt->bindParam(':email', $email);
-        $stmt->execute();
-
+        $stmt = $this->pdo->prepare("SELECT id, name, email, password FROM users WHERE email = ?");
+        $stmt->execute([$email]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($user && password_verify($password, $user['password'])) {
-            // login válido
-            return [
-                'id' => $user['id'],
-                'name' => $user['name'],
-                'email' => $user['email']
-            ];
+            unset($user['password']); // não retorna a senha
+            return $user;
         }
 
         return false;

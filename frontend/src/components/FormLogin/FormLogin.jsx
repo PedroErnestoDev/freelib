@@ -21,15 +21,20 @@ export default function FormLogin() {
       [e.target.name]: e.target.value,
     });
   };
-
   const formSubmit = async (e) => {
     e.preventDefault();
 
     const result = await login(formData);
 
+    console.log("Resultado do login:", result);
+
+    // Ajuste aqui: pegar corretamente o usuário
+    const user = result.data.user;
+    const token = result.data.token;
+
     if (result.success) {
-      // Exemplo: salvar token no localStorage
-      localStorage.setItem("token", result.data.token);
+      localStorage.setItem("token", token);
+      localStorage.setItem("userId", user.id); // salva o id do usuário
       navigate("/dashboard");
     } else {
       alert(result.error);
@@ -42,7 +47,7 @@ export default function FormLogin() {
         <Input
           label="Email"
           name="email"
-          type="e-mail"
+          type="email"
           onChange={handleChange}
           value={formData.email}
         />

@@ -18,21 +18,17 @@ class ArticleController
 
     public function createArticle()
     {
-        // Checa se chegou via POST
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return $this->respond(['error' => 'Método inválido'], 405);
         }
 
-        // Diretórios de upload
         $filesDir  = __DIR__ . '/../uploads/files/';
         $coversDir = __DIR__ . '/../uploads/covers/';
 
-        // Pega dados do form
         $title   = $_POST['fileTitle'] ?? null;
         $summary = $_POST['fileSummary'] ?? null;
         $userId  = $_POST['user_id'] ?? null;
 
-        // Arquivos
         $file      = $_FILES['file'] ?? null;
         $fileCover = $_FILES['fileCover'] ?? null;
 
@@ -40,13 +36,11 @@ class ArticleController
             return $this->respond(['error' => 'Campos obrigatórios faltando'], 400);
         }
 
-        // Move o arquivo principal
         $filePath = $filesDir . basename($file['name']);
         if (!move_uploaded_file($file['tmp_name'], $filePath)) {
             return $this->respond(['error' => 'Falha ao salvar arquivo'], 500);
         }
 
-        // Move a capa, se houver
         $coverPath = null;
         if ($fileCover) {
             $coverPath = $coversDir . basename($fileCover['name']);
@@ -55,18 +49,29 @@ class ArticleController
             }
         }
 
-        // Salva no banco
         $data = [
-            'user_id'    => $userId,
-            'title'      => $title,
-            'summary'    => $summary,
+            'user_id'     => $userId,
+            'title'       => $title,
+            'summary'     => $summary,
             'cover_image' => $coverPath ? 'uploads/covers/' . basename($fileCover['name']) : null,
-            'file_path'  => 'uploads/files/' . basename($file['name']),
+            'file_path'   => 'uploads/files/' . basename($file['name']),
         ];
 
-        $success = $this->model->create($data);
-
-        return $this->respond(['success' => $success], $success ? 201 : 500);
+        error_log("Tentando criar artigo com user_id: " . $userId);
+        
+        try {
+            $success = $this->model->create($data);
+            if (!$success) {
+                $errorInfo = $this->pdo->errorInfo();
+                return $this->respond([
+                    'success' => false,
+                    'error'   => $errorInfo[2] ?? 'Erro desconhecido no insert'
+                ], 500);
+            }
+            return $this->respond(['success' => true], 201);
+        } catch (Exception $e) {
+            return $this->respond(['success' => false, 'error' => $e->getMessage()], 500);
+        }
     }
 
 
@@ -91,7 +96,7 @@ class ArticleController
 
     public function listByUser($user_id)
     {
-        $articles = $this->model->getByUser($user_id);
+        $articles = $this->model->findByUserId($user_id);
         return $this->respond($articles);
     }
 
