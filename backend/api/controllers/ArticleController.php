@@ -4,6 +4,7 @@ header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 
 require_once __DIR__ . "/../models/ArticleModel.php";
+require_once __DIR__ . "/../middlewares/AuthMiddleware.php";
 
 class ArticleController
 {
@@ -18,6 +19,8 @@ class ArticleController
 
     public function createArticle()
     {
+        $user = AuthMiddleware::validateToken();
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return $this->respond(['error' => 'Método inválido'], 405);
         }
