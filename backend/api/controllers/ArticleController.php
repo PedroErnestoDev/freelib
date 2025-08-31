@@ -81,6 +81,8 @@ class ArticleController
 
     public function listAll()
     {
+        $user = AuthMiddleware::validateToken();
+
         try {
             $q = $_GET['q'] ?? null;
             error_log("Query recebida: $q"); // Adicione isso
@@ -99,6 +101,8 @@ class ArticleController
 
     public function listByUser($user_id)
     {
+        $user = AuthMiddleware::validateToken();
+
         $articles = $this->model->findByUserId($user_id);
         return $this->respond($articles);
     }

@@ -48,6 +48,8 @@ class UserController
 
     public function profile($id)
     {
+        $user = AuthMiddleware::validateToken();
+
         $user = $this->model->findById($id);
 
         if (!$user) {
