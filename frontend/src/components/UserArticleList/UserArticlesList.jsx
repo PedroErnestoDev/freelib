@@ -10,7 +10,14 @@ export default function UserArticlesList({ userId }) {
     if (!userId) return;
 
     try {
-      const res = await fetch(`${BASE_URL}/article/user/${userId}`);
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${BASE_URL}/article/user/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // 🔑 Envia o JWT
+          "Content-Type": "application/json",
+        },
+      });
+
       if (!res.ok) throw new Error(`Erro na requisição: ${res.status}`);
       const data = await res.json();
       setArticles(data || []);
@@ -28,12 +35,12 @@ export default function UserArticlesList({ userId }) {
 
   return (
     <>
-    <h1>Seus Arquivos</h1>
-    <div className="userArticlesList">
-      {articles.map((article) => (
-        <Article key={article.id} article={article} />
-      ))}
-    </div>
+      <h1>Seus Arquivos</h1>
+      <div className="userArticlesList">
+        {articles.map((article) => (
+          <Article key={article.id} article={article} />
+        ))}
+      </div>
     </>
   );
 }

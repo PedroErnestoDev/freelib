@@ -29,15 +29,16 @@ export default function FormLogin() {
     console.log("Resultado do login:", result);
 
     // Ajuste aqui: pegar corretamente o usuário
-    const user = result.data.user;
-    const token = result.data.token;
+    const user = result?.data?.user;
+    const token = result?.data?.token;
 
-    if (result.success) {
+    if (result.success && user && token) {
       localStorage.setItem("token", token);
-      localStorage.setItem("userId", user.id); // salva o id do usuário
+      localStorage.setItem("userId", user.id);
       navigate("/dashboard");
     } else {
-      alert(result.error);
+      console.error("Erro no login:", result);
+      alert(result.error || "Erro ao fazer login");
     }
   };
 

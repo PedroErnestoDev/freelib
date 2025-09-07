@@ -4,6 +4,7 @@ require_once __DIR__ . "/../models/UserModel.php";
 require_once __DIR__ . "/../models/ArticleModel.php";
 
 require_once __DIR__ . "/../../vendor/autoload.php";
+
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
@@ -21,34 +22,26 @@ class UserController
         $this->articleModel = new ArticleModel($pdo);
     }
 
-    private function setJWT($user){
+    private function setJWT(int $userId)
+    {
         try {
             $payload = [
-            'iss' => 'http://localhost:8000', // emissor
-            'aud' => 'http://localhost:5173', // audiência (frontend)
-            'iat' => time(), // hora de emissão
-            'exp' => time() + 3600, // expira em 1 hora
-            'userId' => $user, // id do usuário
-        ];
+                'iss' => 'http://localhost:8000',
+                'iat' => time(),
+                'exp' => time() + 3600, // 1 hora
+                'sub' => $userId,       // id do usuário
+            ];
 
-        $token = JWT::encode($payload, $this->jwtSecret, $this->jwtAlgo);
+            $token = JWT::encode($payload, $this->jwtSecret, $this->jwtAlgo);
 
-        return [
-            "token" => $token,
-            "error" => false
-        ];
-    } catch(Exception $ex){
-        return [
-            "token" => null,
-            "error" => true
-        ];
-    }
-        
+            return ["token" => $token, "error" => false];
+        } catch (Exception $ex) {
+            return ["token" => null, "error" => true];
+        }
     }
 
     public function profile($id)
     {
-        $user = AuthMiddleware::validateToken();
 
         $user = $this->model->findById($id);
 
@@ -93,23 +86,34 @@ class UserController
             return $this->respond(['error' => 'Email e senha são obrigatórios'], 400);
         }
 
+        // Deve retornar o usuário (ex.: ['id'=>..., 'email'=>..., 'name'=>..., 'password'=>...])
         $user = $this->model->login($email, $password);
 
-        $jwt = $this->setJWT($user);
-
-        if($jwt['error'] == true && $jwt['token'] == null){
-            return $this->respond(['error' => 'Unknown error']);
-        }
-
-        if ($user) {
-            return $this->respond([
-                'success' => true,
-                'token' => $jwt["token"], // ou JWT real
-                'user'  => $user
-            ], 200);
-        } else {
+        if (!$user) {
             return $this->respond(['success' => false, 'error' => 'Email ou senha inválidos'], 401);
         }
+
+        // Se seu model->login já usa password_verify internamente, ok.
+        // Se NÃO usa, faça:
+        // if (!password_verify($password, $user['password'])) {
+        //     return $this->respond(['success'=>false,'error'=>'Email ou senha inválidos'],401);
+        // }
+
+        $jwt = $this->setJWT((int)$user['id']);
+
+        if ($jwt['error'] === true || !$jwt['token']) {
+            return $this->respond(['error' => 'Erro ao gerar token'], 500);
+        }
+
+        return $this->respond([
+            'success' => true,
+            'token'   => $jwt['token'],
+            'user'    => [
+                'id'    => $user['id'],
+                'email' => $user['email'],
+                'name'  => $user['name'] ?? null,
+            ],
+        ], 200);
     }
 
     private function respond($data, $status = 200)

@@ -1,33 +1,35 @@
 <?php
-require_once __DIR__ . "/../../vendor/autoload.php";
+
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
-class AuthMiddleware {
+class AuthMiddleware
+{
     private static $jwtSecret = "pedroç";
-    private static $jwtAlgo = "HS256";
+    private static $jwtAlgo   = "HS256";
 
-    /**
-     * Verifica se o token é válido
-     */
-    public static function validateToken() {
-        $headers = apache_request_headers();
+    public static function validateToken()
+    {
+        $headers = function_exists('getallheaders') ? getallheaders() : [];
 
-        if (!isset($headers['Authorization'])) {
+        // Alguns servidores podem fornecer 'authorization' em minúsculo
+        $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? null;
+
+        if (!$authHeader || stripos($authHeader, 'Bearer ') !== 0) {
             http_response_code(401);
             echo json_encode(["error" => "Token não fornecido"]);
             exit;
         }
 
-        $authHeader = $headers['Authorization'];
-        $token = str_replace("Bearer ", "", $authHeader);
+        $token = trim(substr($authHeader, 7)); // remove "Bearer "
 
         try {
             $decoded = JWT::decode($token, new Key(self::$jwtSecret, self::$jwtAlgo));
-            return $decoded; // retorna payload decodificado
+            // Retorne como array para facilitar
+            return (array)$decoded;
         } catch (Exception $e) {
             http_response_code(401);
-            echo json_encode(["error" => "Token inválido", "details" => $e->getMessage()]);
+            echo json_encode(["error" => "Token inválido ou expirado"]);
             exit;
         }
     }

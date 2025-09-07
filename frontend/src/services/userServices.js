@@ -82,9 +82,14 @@ export const listArticles = async (q = "") => {
 
 export const createArticle = async (formData) => {
   try {
+    const token = localStorage.getItem("token"); // pega o token do login
     const response = await fetch(`${BASE_URL}/article/create`, {
       method: "POST",
-      body: formData, // envia FormData
+      headers: {
+        "Authorization": `Bearer ${token}` // envia token no header
+        // NÃO coloque "Content-Type" para FormData
+      },
+      body: formData,
     });
 
     if (!response.ok) {
@@ -98,6 +103,7 @@ export const createArticle = async (formData) => {
     return { success: false, error: error.message || "Erro inesperado" };
   }
 };
+
 
 // Buscar perfil do usuário
 export const getProfile = async (userId) => {

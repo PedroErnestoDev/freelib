@@ -81,7 +81,7 @@ class ArticleController
 
     public function listAll()
     {
-        $user = AuthMiddleware::validateToken();
+        
 
         try {
             $q = $_GET['q'] ?? null;
